@@ -4,7 +4,12 @@
 set -e
 
 readonly VAULT_CONFIG_FILE="default.hcl"
-readonly SUPERVISOR_CONFIG_PATH="/etc/supervisor/conf.d/run-vault.conf"
+
+if $(has_apt_get); then
+    readonly SUPERVISOR_CONFIG_PATH="/etc/supervisor/conf.d/run-consul.conf"
+elif $(has_yum); then
+    readonly SUPERVISOR_CONFIG_PATH="/etc/supervisor.d/run-consul.ini"
+fi
 
 readonly DEFAULT_PORT=8200
 readonly DEFAULT_LOG_LEVEL="info"
@@ -55,6 +60,15 @@ function print_usage {
   echo
   echo "  run-vault --gcs-bucket my-vault-bucket --tls-cert-file /opt/vault/tls/vault.crt.pem --tls-key-file /opt/vault/tls/vault.key.pem"
   echo
+}
+
+# Using package manager checks to determine OS.
+function has_yum {
+  [ -n "$(command -v yum)" ]
+}
+
+function has_apt_get {
+  [ -n "$(command -v apt-get)" ]
 }
 
 function log {
