@@ -3,6 +3,7 @@
 # operating systems:
 #
 # 1. Ubuntu 16.04
+# 2. CentOS 7
 
 set -e
 
@@ -96,6 +97,10 @@ function has_apt_get {
   [[ -n "$(command -v apt-get)" ]]
 }
 
+function has_yum {
+  [ -n "$(command -v yum)" ]
+}
+
 function install_dependencies {
   log_info "Installing dependencies"
 
@@ -105,6 +110,8 @@ function install_dependencies {
     # libcap2-bin: Installs setcap, which we will use to call configure_mlock
     sudo apt-get install -y curl unzip jq libcap2-bin
     install_supervisord_debian
+  elif $(has_yum); then
+      sudo yum install -y curl unzip jq libcap
   else
     log_error "Could not find apt-get. Cannot install dependencies on this OS."
     exit 1
